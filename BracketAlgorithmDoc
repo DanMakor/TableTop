@@ -1,0 +1,69 @@
+Documenting where I've landed with the bracket algorithm. By no means a refined final product, absolutely subject to change.
+
+Bracket Algorithm Overview
+Prioritises matchups where no players have previously played their opponent
+Second priority are matchups where each players opponent is as close as possible to them in skill (skill level defined by cumulative tournament BattlePoints)
+
+Proposal
+Algorithm that moves down the list from highest BattleScore to lowest allocating matchups. 
+Begins with the player with the highest battlescore.
+Matches that player with the player with the next highest battlescore that has not versed the first player
+Iterates through the rest of the players until everyone is matched
+If there is a conflict and a player has no available opponents, the algorithm will iterate back up the tree removing already set matchups and assigning a new match
+(I know this last line is pretty unclear but it's fleshed out a bit in the example)
+
+Example
+Players
+Bob, Judith, Gabe, Fred, Dan, Anneke, Matt, John, Jimmy, James
+ 
+    Round 1	          		  Round 2	            Round 3       
+    Bob vs Judith		        Bob vs Fred         Bob vs Matt
+    Gabe vs Fred		        Matt vs James       James vs Dan
+    Dan vs Anneke		        Dan	vs Judith       Anneke vs Fred
+    Matt vs John		        Anneke vs Gabe      John vs Judith
+    Jimmy vs James		      John vs Jimmy       Gabe vs Jimmy
+
+ Standings after Round 1 and 2, sorted by highest battlescore
+    Player    BattleScore
+    Bob	      6
+    James	    5
+    Fred	    4
+    Matt	    3
+    Dan	      3
+    Anneke	  3
+    John	    2
+    Judith	  2
+    Gabe	    2
+    Jimmy	    0
+  
+Iteration                                                 Iteration 1   Iteration 2   Iteration 3     Iteration 4
+  Start from highest unallocated player - A               Bob           Fred          Dan             Anneke
+  Find next highest player that Bob has not played - B    James         Matt          John            Judith
+  Allocate A to B and vice-versa                          Bob vs James  Fred vs Matt  Dan vs John     Anneke vs Judith
+  
+At Iteration 5 we encounter a problem, all pairs are allocated but Gabe and Jimmy have already played each other. 
+The algorithm will then begin to head back up the list iteratively.
+
+Iteration
+  Unallocate the next highest player and their pair - Judith / Anneke
+  Start from the highest unallocated player - Anneke 
+  Find the next highest player after Judith that Anneke has not played - Gabe
+  Allocate Anneke to Gabe
+  
+At this point we can begin to iterate through the remaining players using the method defined initially. (When programmed both iterations will make use of the same code) 
+We end up with the following player allocation for round 4
+
+  Round 4
+  Bob vs James
+  Fred vs Matt
+  Dan vs John
+  Anneke vs Gabe
+  Judith vs Jimmy
+
+Conclusion
+I tested (with paper and pen) another 2 iterations to generate a few more conflicts. As far as I can see the algorithm core is sound.
+Going a few iterations deeper revealed that there will be some questions around what defines the best BattleScore matchup with regard to all allocations in the round
+I figured I should get what I have up here so we can begin to collaborate. Hopefully this is a good base and we can start to refine 
+the algorithm and think about how we will actually implement it. 
+  
+  
